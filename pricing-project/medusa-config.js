@@ -1,4 +1,6 @@
 const dotenv = require("dotenv");
+const { Modules } = require("@medusajs/modules-sdk");
+const { Workflows } = require("@medusajs/workflows");
 
 let ENV_FILE_NAME = "";
 switch (process.env.NODE_ENV) {
@@ -31,6 +33,8 @@ const STORE_CORS = process.env.STORE_CORS || "http://localhost:8000";
 const DATABASE_URL =
   process.env.DATABASE_URL || "postgres://localhost/medusa-starter-default";
 
+process.env.POSTGRES_URL = DATABASE_URL;
+
 const REDIS_URL = process.env.REDIS_URL || "redis://localhost:6379";
 
 const plugins = [
@@ -54,19 +58,24 @@ const plugins = [
   },
 ];
 
-const modules = {
-  /*eventBus: {
-    resolve: "@medusajs/event-bus-redis",
-    options: {
-      redisUrl: REDIS_URL
-    }
+const featureFlags = {
+  medusa_v2: true,
+  workflows: {
+    [Workflows.CreateCart]: true,
   },
-  cacheService: {
-    resolve: "@medusajs/cache-redis",
-    options: {
-      redisUrl: REDIS_URL
-    }
-  },*/
+};
+
+const modules = {
+  [Modules.PRODUCT]: {
+    scope: "internal",
+    resources: "shared",
+    resolve: "@medusajs/product",
+  },
+  [Modules.PRICING]: {
+    scope: "internal",
+    resources: "shared",
+    resolve: "@medusajs/pricing",
+  },
 };
 
 /** @type {import('@medusajs/medusa').ConfigModule["projectConfig"]} */
@@ -85,4 +94,5 @@ module.exports = {
   projectConfig,
   plugins,
   modules,
+  featureFlags,
 };
