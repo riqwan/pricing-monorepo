@@ -31,7 +31,7 @@ const ADMIN_CORS =
 const STORE_CORS = process.env.STORE_CORS || "http://localhost:8000";
 
 const DATABASE_URL =
-  process.env.DATABASE_URL || "postgres://localhost/medusa-starter-default";
+  process.env.DATABASE_URL || "postgres://localhost/pricing-monorepo";
 
 process.env.POSTGRES_URL = DATABASE_URL;
 
@@ -66,16 +66,8 @@ const featureFlags = {
 };
 
 const modules = {
-  [Modules.PRODUCT]: {
-    scope: "internal",
-    resources: "shared",
-    resolve: "@medusajs/product",
-  },
-  [Modules.PRICING]: {
-    scope: "internal",
-    resources: "shared",
-    resolve: "@medusajs/pricing",
-  },
+  [Modules.PRODUCT]: true,
+  [Modules.PRICING]: true,
 };
 
 /** @type {import('@medusajs/medusa').ConfigModule["projectConfig"]} */
