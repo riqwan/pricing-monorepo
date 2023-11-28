@@ -1,12 +1,12 @@
-import medusaRequest from "../medusa-fetch"
 import {
-  StoreGetProductsParams,
   Product,
   ProductCategory,
   ProductCollection,
+  StoreGetProductsParams,
 } from "@medusajs/medusa"
-import { MedusaV2Flag } from "@medusajs/utils/dist/feature-flags"
 import { PricedProduct } from "@medusajs/medusa/dist/types/pricing"
+import { MedusaV2Flag } from "@medusajs/utils/dist/feature-flags"
+import medusaRequest from "../medusa-fetch"
 
 export type ProductCategoryWithChildren = Omit<
   ProductCategory,
@@ -43,7 +43,7 @@ export async function getProductByHandle(
 
     return data
   }
-
+  console.log("boink")
   const { products } = await medusaRequest("GET", "/products", {
     query: {
       handle,
@@ -78,6 +78,7 @@ export async function getProductsList({
 }> {
   const limit = queryParams.limit || 12
 
+  console.warn(MEDUSA_V2_ENABLED)
   if (MEDUSA_V2_ENABLED) {
     const params = new URLSearchParams(queryParams as Record<string, string>)
 
@@ -87,6 +88,7 @@ export async function getProductsList({
         next: {
           tags: ["products"],
         },
+        credentials: "include",
       }
     ).then((res) => res.json())
 

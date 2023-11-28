@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from "next/server"
 import { notFound } from "next/navigation"
+import { NextRequest, NextResponse } from "next/server"
 
-import { MedusaApp, Modules } from "@medusajs/modules-sdk"
 import { getPricesByPriceSetId } from "@lib/util/get-prices-by-price-set-id"
+import { MedusaApp, Modules } from "@medusajs/modules-sdk"
 import { IPricingModuleService } from "@medusajs/types"
 
 /**
@@ -13,6 +13,7 @@ import { IPricingModuleService } from "@medusajs/types"
 export async function GET(request: NextRequest) {
   const queryParams = Object.fromEntries(request.nextUrl.searchParams)
 
+  console.warn(JSON.stringify(request.cookies, null, 2))
   const response = await getProducts(queryParams)
 
   if (!response) {

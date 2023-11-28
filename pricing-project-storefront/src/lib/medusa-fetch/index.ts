@@ -16,6 +16,7 @@ export default async function medusaRequest(
     headers: {
       "Content-Type": "application/json",
       "x-publishable-key": MEDUSA_API_KEY,
+      credentials: "include",
     },
     next: {
       revalidate: parseInt(REVALIDATE_WINDOW.toString()),

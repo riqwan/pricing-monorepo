@@ -1,9 +1,9 @@
-import { getProductsList, getCollectionsList } from "@lib/data"
+import { getCollectionsList, getProductsList } from "@lib/data"
 import { getPercentageDiff } from "@lib/util/get-precentage-diff"
 import { ProductCollection, Region } from "@medusajs/medusa"
 import { PricedProduct } from "@medusajs/medusa/dist/types/pricing"
 import { useQuery } from "@tanstack/react-query"
-import { formatAmount, useCart } from "medusa-react"
+import { formatAmount, useCart, useProducts } from "medusa-react"
 import { ProductPreviewType } from "types/global"
 import { CalculatedVariant } from "types/medusa"
 
@@ -114,20 +114,65 @@ const fetchFeaturedProducts = async (
 export const useFeaturedProductsQuery = (collectionId?: string) => {
   const { cart } = useCart()
 
-  const queryResults = useQuery(
-    ["layout_featured_products", cart?.id, cart?.region, collectionId],
-    () =>
-      fetchFeaturedProducts(
-        cart?.id!,
-        cart?.region!,
-        collectionId && collectionId
-      ),
-    {
-      enabled: !!cart?.id && !!cart?.region,
-      staleTime: Infinity,
-      refetchOnWindowFocus: false,
-    }
-  )
+  const params: any = {}
+  if (cart?.id) {
+    params.cart_id = cart?.id
+  }
+  if (collectionId) {
+    params.collection_id = [collectionId]
+  }
+  const { products } = useProducts(params, {
+    enabled: !!cart?.id && !!cart?.region,
+    // staleTime: Infinity,
+    // refetchOnWindowFocus: false,
+  })
 
-  return queryResults
+  if (!products) {
+    return { data: [] }
+  }
+  return {
+    data: products
+      .filter((p) => !!p.variants)
+      .map((p) => {
+        const variants = p.variants as unknown as CalculatedVariant[]
+
+        const cheapestVariant = variants.reduce((acc, curr) => {
+          if (acc.calculated_price > curr.calculated_price) {
+            return curr
+          }
+          return acc
+        }, variants[0])
+
+        return {
+          id: p.id!,
+          title: p.title!,
+          handle: p.handle!,
+          thumbnail: p.thumbnail!,
+          price: cheapestVariant
+            ? {
+                calculated_price: formatAmount({
+                  amount: cheapestVariant.calculated_price,
+                  region: cart?.region!,
+                  includeTaxes: false,
+                }),
+                original_price: formatAmount({
+                  amount: cheapestVariant.original_price,
+                  region: cart?.region!,
+                  includeTaxes: false,
+                }),
+                difference: getPercentageDiff(
+                  cheapestVariant.original_price,
+                  cheapestVariant.calculated_price
+                ),
+                price_type: cheapestVariant.calculated_price_type,
+              }
+            : {
+                calculated_price: "N/A",
+                original_price: "N/A",
+                difference: "N/A",
+                price_type: "default",
+              },
+        }
+      }),
+  }
 }
