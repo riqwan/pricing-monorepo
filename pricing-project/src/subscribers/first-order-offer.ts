@@ -10,7 +10,7 @@ type OrderPlacedData = {
   id: string;
 };
 
-const firstOrderCustomerGroupId = "cgrp_01HGB4ZHVN6VS4NQWA6PP3DJ0K";
+const firstOrderCustomerGroupId = "cgrp_01HGBRJVMQJ6TPWW7PQ89V19QR";
 
 export default class FirstOrderOfferSubscriber {
   protected readonly manager_: EntityManager;
@@ -59,7 +59,7 @@ export default class FirstOrderOfferSubscriber {
 
       return;
     }
-
+    console.log("adding customer");
     await this.customerGroupService_.addCustomers(firstOrderCustomerGroupId, [
       customerId,
     ]);

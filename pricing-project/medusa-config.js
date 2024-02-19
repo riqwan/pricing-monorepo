@@ -59,16 +59,10 @@ const plugins = [
 ];
 
 const featureFlags = {
-  medusa_v2: true,
-  workflows: {
-    [Workflows.CreateCart]: true,
-  },
+  medusa_v2: false,
 };
 
-const modules = {
-  [Modules.PRODUCT]: true,
-  [Modules.PRICING]: true,
-};
+const modules = {};
 
 /** @type {import('@medusajs/medusa').ConfigModule["projectConfig"]} */
 const projectConfig = {

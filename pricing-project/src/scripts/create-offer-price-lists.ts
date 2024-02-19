@@ -39,7 +39,7 @@ async function fetchVariantPriceSets(query) {
     variables: {},
     fields,
   });
-
+  console.log("remoteQueryObject - ", remoteQueryObject);
   return await query(remoteQueryObject);
 }
 
